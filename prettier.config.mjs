@@ -9,7 +9,11 @@ const config = {
   singleQuote: true,
   tabWidth: 2,
   trailingComma: 'none',
-  useTabs: false
+  useTabs: false,
+  plugins: ['@trivago/prettier-plugin-sort-imports'],
+  importOrder: ['^[./]'],
+  importOrderSeparation: true,
+  importOrderSortSpecifiers: true
 };
 
 export default config;

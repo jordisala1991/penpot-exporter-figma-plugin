@@ -1,10 +1,10 @@
-import * as React from 'react';
-import './ui.css';
-import * as penpot from './penpot.js';
-
 import { extractLinearGradientParamsFromTransform } from '@figma-plugin/helpers';
-import slugify from 'slugify';
+import * as React from 'react';
 import { createRoot } from 'react-dom/client';
+import slugify from 'slugify';
+
+import * as penpot from './penpot.js';
+import './ui.css';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 declare function require(path: string): any;
