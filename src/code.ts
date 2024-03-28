@@ -20,7 +20,6 @@ function detectMimeType(b64: string) {
 }
 
 function traverse(node: BaseNode): NodeData | TextData {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const children: (NodeData | TextData)[] = [];
 
   if ('children' in node) {
