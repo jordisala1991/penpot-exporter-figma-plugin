@@ -1,24 +1,17 @@
-type NodeData = {
-  id: string;
-  name: string;
-  type: string;
-  children: Node[];
-  x: number;
-  y: number;
-  width: number;
-  height: number;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  fills: any;
-};
+import { NodeData, TextData } from './interfaces';
 
-const signatures = {
+interface Signatures {
+  [key: string]: string;
+}
+
+const signatures: Signatures = {
   'R0lGODdh': 'image/gif',
   'R0lGODlh': 'image/gif',
   'iVBORw0KGgo': 'image/png',
   '/9j/': 'image/jpg'
 };
 
-function detectMimeType(b64) {
+function detectMimeType(b64: string) {
   for (const s in signatures) {
     if (b64.indexOf(s) === 0) {
       return signatures[s];
@@ -26,9 +19,9 @@ function detectMimeType(b64) {
   }
 }
 
-function traverse(node): NodeData {
+function traverse(node: BaseNode): NodeData | TextData {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const children: any[] = [];
+  const children: (NodeData | TextData)[] = [];
 
   if ('children' in node) {
     if (node.type !== 'INSTANCE') {
@@ -38,35 +31,36 @@ function traverse(node): NodeData {
     }
   }
 
-  let result = {
+  const result = {
     id: node.id,
     type: node.type,
     name: node.name,
     children: children,
-    x: node.x,
-    y: node.y,
-    width: node.width,
-    height: node.height,
-    fills: node.fills === figma.mixed ? [] : node.fills //TODO: Support mixed fills
+    x: 'x' in node ? node.x : 0,
+    y: 'y' in node ? node.y : 0,
+    width: 'width' in node ? node.width : 0,
+    height: 'height' in node ? node.height : 0,
+    fills: 'fills' in node ? (node.fills === figma.mixed ? [] : node.fills) : [] // TODO: Support mixed fills
   };
 
-  if (node.fills && Array.isArray(node.fills)) {
+  if (result.fills) {
     // Find any fill of type image
-    const imageFill = node.fills.find(fill => fill.type === 'IMAGE');
+    const imageFill = result.fills.find(fill => fill.type === 'IMAGE');
     if (imageFill) {
       // An "image" in Figma is a shape with one or more image fills, potentially blended with other fill
       // types.  Given the complexity of mirroring this exactly in Penpot, which treats images as first-class
       // objects, we're going to simplify this by exporting this shape as a PNG image.
-      node.exportAsync({ format: 'PNG' }).then(value => {
-        const b64 = figma.base64Encode(value);
-        figma.ui.postMessage({
-          type: 'IMAGE',
-          data: {
-            id: node.id,
-            value: 'data:' + detectMimeType(b64) + ';base64,' + b64
-          }
+      'exportAsync' in node &&
+        node.exportAsync({ format: 'PNG' }).then(value => {
+          const b64 = figma.base64Encode(value);
+          figma.ui.postMessage({
+            type: 'IMAGE',
+            data: {
+              id: node.id,
+              value: 'data:' + detectMimeType(b64) + ';base64,' + b64
+            }
+          });
         });
-      });
     }
   }
 
@@ -84,6 +78,7 @@ function traverse(node): NodeData {
 
     if (styledTextSegments[0]) {
       const font = {
+        ...result,
         fontName: styledTextSegments[0].fontName,
         fontSize: styledTextSegments[0].fontSize.toString(),
         fontWeight: styledTextSegments[0].fontWeight.toString(),
@@ -97,16 +92,17 @@ function traverse(node): NodeData {
         textAlignVertical: node.textAlignVertical,
         children: styledTextSegments
       };
-      result = { ...result, ...font };
+
+      return font as TextData;
     }
   }
 
-  return result;
+  return result as NodeData;
 }
 
 figma.showUI(__html__, { themeColors: true, height: 200, width: 300 });
 
-const root: NodeData = traverse(figma.root); // start the traversal at the root
+const root: NodeData | TextData = traverse(figma.root); // start the traversal at the root
 figma.ui.postMessage({ type: 'FIGMAFILE', data: root });
 
 figma.ui.onmessage = msg => {

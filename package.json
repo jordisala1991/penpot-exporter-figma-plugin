@@ -2,6 +2,7 @@
   "name": "penpot-exporter",
   "version": "0.0.1",
   "description": "Penpot exporter",
+  "type": "module",
   "main": "code.js",
   "scripts": {
     "build": "webpack",
@@ -9,7 +10,7 @@
     "lint": "run-p lint:*",
     "lint:eslint": "eslint .",
     "lint:prettier": "prettier --check .",
-    "lint:tsc": "tsc --pretty false",
+    "lint:tsc": "tsc --noEmit --pretty false",
     "fix-lint": "run-p fix-lint:*",
     "fix-lint:prettier": "prettier --write .",
     "fix-lint:eslint": "eslint . --fix"
@@ -17,7 +18,6 @@
   "author": "Kaleidos",
   "license": "MPL2.0",
   "dependencies": {
-    "@figma-plugin/helpers": "^0.15",
     "react": "^18.2",
     "react-dom": "^18.2",
     "slugify": "^1.6"
