@@ -5,7 +5,14 @@
   "main": "code.js",
   "scripts": {
     "build": "webpack",
-    "watch": "webpack watch"
+    "watch": "webpack watch",
+    "lint": "run-p lint:*",
+    "lint:eslint": "eslint .",
+    "lint:prettier": "prettier --check .",
+    "lint:tsc": "tsc --pretty false",
+    "fix-lint": "run-p fix-lint:*",
+    "fix-lint:prettier": "prettier --write .",
+    "fix-lint:eslint": "eslint . --fix"
   },
   "author": "Kaleidos",
   "license": "MPL2.0",
@@ -16,6 +23,7 @@
     "slugify": "^1.6"
   },
   "devDependencies": {
+    "@figma/eslint-plugin-figma-plugins": "^0.15",
     "@figma/plugin-typings": "^1.88",
     "@trivago/prettier-plugin-sort-imports": "^4.3",
     "@types/react": "^18.2",
@@ -27,6 +35,7 @@
     "eslint-plugin-react": "^7.34",
     "html-webpack-inline-source-plugin": "0.0.10",
     "html-webpack-plugin": "^5.6",
+    "npm-run-all2": "^6.1",
     "prettier": "^3.2",
     "react-dev-utils": "^12.0",
     "style-loader": "^3.3",

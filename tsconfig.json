@@ -1,9 +1,11 @@
 {
   "compilerOptions": {
     "target": "es6",
-    "jsx": "react",
-    "typeRoots": ["./node_modules/@types", "./node_modules/@figma"],
-    "moduleResolution": "node"
-  },
-  "include": ["src/**/*.ts", "src/**/*.tsx"]
+    "lib": ["dom", "es6"],
+    "moduleResolution": "Node",
+    "strict": true,
+    "noEmit": true,
+    "jsx": "preserve",
+    "typeRoots": ["./node_modules/@types", "./node_modules/@figma"]
+  }
 }
